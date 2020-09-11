@@ -1,0 +1,62 @@
+object WBotForm: TWBotForm
+  Left = 511
+  Height = 550
+  Top = 197
+  Width = 820
+  Caption = 'WBotForm'
+  ClientHeight = 550
+  ClientWidth = 820
+  Color = clWhite
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  Position = poDesktopCenter
+  LCLVersion = '2.0.10.0'
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 24
+    Top = 526
+    Width = 820
+    Panels = <>
+    ParentColor = False
+  end
+  object QrCodeImg: TImage
+    Left = 0
+    Height = 526
+    Top = 0
+    Width = 820
+    Align = alClient
+    Center = True
+    Visible = False
+  end
+  object ChromiumWindow: TCEFWindowParent
+    Left = 0
+    Height = 526
+    Top = 0
+    Width = 820
+    Align = alClient
+    TabOrder = 1
+    Visible = False
+  end
+  object Chromium: TChromium
+    OnTitleChange = ChromiumTitleChange
+    OnConsoleMessage = ChromiumConsoleMessage
+    OnAfterCreated = ChromiumAfterCreated
+    Left = 72
+    Top = 24
+  end
+  object TimerConnect: TTimer
+    Enabled = False
+    OnTimer = OnTimerConnect
+    Left = 72
+    Top = 104
+  end
+  object TimerMonitoring: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = OnTimerMonitoring
+    Left = 72
+    Top = 182
+  end
+end

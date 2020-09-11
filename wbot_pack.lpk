@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="WBot_Pack"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Linking>
+        <Debugging>
+          <UseHeaptrc Value="True"/>
+        </Debugging>
+      </Linking>
+    </CompilerOptions>
+    <Version Minor="1" Release="1" Build="1"/>
+    <Files Count="5">
+      <Item1>
+        <Filename Value="wbot_const.pas"/>
+        <UnitName Value="WBot_Const"/>
+      </Item1>
+      <Item2>
+        <Filename Value="wbot_model.pas"/>
+        <UnitName Value="WBot_Model"/>
+      </Item2>
+      <Item3>
+        <Filename Value="wbot_utils.pas"/>
+        <UnitName Value="WBot_Utils"/>
+      </Item3>
+      <Item4>
+        <Filename Value="wbot_config.pas"/>
+        <UnitName Value="WBot_Config"/>
+      </Item4>
+      <Item5>
+        <Filename Value="wbot_form.pas"/>
+        <UnitName Value="WBot_Form"/>
+      </Item5>
+    </Files>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="CEF4Delphi_Lazarus"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
