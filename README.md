@@ -1,4 +1,5 @@
-# WBOT
+<img alt="Logo" src="https://raw.githubusercontent.com/groupsc10/WBot/master/logo/logo.png?token=AMJ6WS2I2XFU7UYXAOFCIJK7LTXSY">
+
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/groupsc10/RSQL/LICENSE.txt)
 
