@@ -20,20 +20,12 @@ const
   WBOT_NAME = 'WBOT';  
   WBOT_VERSION = '0.1.1.1';   
   WBOT_WHATSAPP = 'https://web.whatsapp.com/';
-  WBOT_JS = 'js.bot';
   WBOT_INI = 'wbot.ini';
-
-  CEF_VERSION_MAJOR = 85;
-  CEF_VERSION_MINOR = 2;
-  CEF_VERSION_REVIEW = 11;
-  CEF_VERSION_BUILD = 1;
-
 
   CMD_SEND_CHAT_STATE =
     'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
   CMD_SEND_MSG =
     'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_BODY#>")';
-
 
   CMD_GET_QRCODE =
     'var _qrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");' + LineEnding +
@@ -50,6 +42,8 @@ const
     'window.WAPI.getAllChats();';
 
 resourcestring
+  EXCEPT_CEF_APP =
+    'Component GlobalCEFApp has not been initialized in your application.';
   EXCEPT_CEF_BROWSER =
     'Error creating browser in CEF';
   EXCEPT_CEF_CONNECT =
@@ -58,8 +52,7 @@ resourcestring
     'Your CEF4 version is not compatible, please update your library at https://github.com/salvadordf/CEF4Delphi'
     + LineEnding + 'Required version: %s' + LineEnding + 'Identified version: %s';
 
-  EXCEPT_JS_UNKNOWN = 'Unknown js.bot return';
-
+  EXCEPT_JS_UNKNOWN = 'Unknown wbot.js return';
 
   QRCODE_LOADING =  'Loading QRCode...';
   QRCODE_SUCCESS = 'Point your phone now!';

@@ -14,11 +14,11 @@ unit WBot_Form;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls, LResources,
   // CEF
-  uCEFWindowParent, uCEFChromium, uCEFTypes, uCEFInterfaces,
+  uCEFWindowParent, uCEFChromium, uCEFTypes, uCEFInterfaces, uCEFApplication,
   // WBot
-  WBot_Model;
+  WBot_Const, WBot_Utils, WBot_Model;
 
 type
 
@@ -59,6 +59,7 @@ type
   private
     procedure SetZoom(const AValue: NativeInt);
   protected
+    procedure CheckCEFApp;
     procedure InternalNotification(const AAction: TActionType;
       const AData: string = '');
     procedure InternalError(const AError: string;
@@ -69,7 +70,6 @@ type
     procedure ProcessQrCode(const AData: string);
   public   
     procedure Connect;
-    procedure DisConnect;
   public
     procedure GetQrCode;
     procedure GetBatteryLevel; 
@@ -97,22 +97,17 @@ implementation
 
 {$R *.lfm}
 
-uses
-  // WBot
-  WBot_Const, WBot_Utils, WBot_Config;
-
 { TWBotForm }
 
 procedure TWBotForm.FormCreate(Sender: TObject);
-begin       
-  GlobalCEFApp.Chromium := Chromium;
+begin
   Chromium.DefaultUrl := WBOT_WHATSAPP;
   FConected := False;
   FAuthenticated := False;
   FBrowser := True;
   FStep := 0;
   FZoom := 1;
-  FLastQrCode := '';
+  FLastQrCode := EmptyStr;
   FMonitorLowBattery := True;
   FMonitorUnreadMsgs := True;
   FOnError := nil;
@@ -121,14 +116,13 @@ end;
 
 procedure TWBotForm.FormDestroy(Sender: TObject);
 begin
-  Chromium.CloseBrowser(True);
   InternalNotification(atDestroy);
 end;          
 
 procedure TWBotForm.FormShow(Sender: TObject);
 begin
   Caption := WBOT_NAME + ' - ' + WBOT_VERSION;
-  StatusBar.SimpleText := '';
+  StatusBar.SimpleText := EmptyStr;
   ChromiumWindow.Visible := False;
   QrCodeImg.Visible := False;
   if (FBrowser) then
@@ -152,8 +146,12 @@ begin
   try
     if (FAuthenticated) then
     begin
-      // Inject script
-      VScript := FileToString(WBOT_JS);
+      // Inject script     
+      {$i wbot.lrs}
+      VScript := ResourceToString('wbot');    
+      {$IfDef wbot_debug}
+      WriteLn('wbot script ', VScript);
+      {$EndIf}
       ExecuteScript(VScript, True);
       Sleep(50);
       if (FBrowser) then
@@ -192,7 +190,8 @@ begin
   end;
 end;
 
-procedure TWBotForm.ChromiumAfterCreated(Sender: TObject; const ABrowser: ICefBrowser);
+procedure TWBotForm.ChromiumAfterCreated(Sender: TObject;
+  const ABrowser: ICefBrowser);
 begin
   TimerConnect.Enabled := True;
 end;
@@ -204,7 +203,9 @@ var
   VModel: TResponseConsole;
   VAction: TActionType;
 begin
-  //WriteLn(AMessage);
+  {$IfDef wbot_debug}  
+  WriteLn(AMessage);
+  {$EndIf}
   // Check JSON
   if (Copy(TrimLeft(AMessage), 1, 2) <> '{"') then
   begin
@@ -272,15 +273,13 @@ end;
 procedure TWBotForm.ExecuteScript(const AScript: string;
   const ADirect: boolean);
 begin
-  if (GlobalCEFApp.Initialized) then
+  CheckCEFApp;  
+  if (not (FConected)) and (not (ADirect))  then
   begin
-    if (not (FConected)) and (not (ADirect))  then
-    begin
-      raise Exception.Create(EXCEPT_CEF_CONNECT);
-    end;
-    Chromium.Browser.MainFrame.ExecuteJavaScript(UnicodeString(AScript),
-      UnicodeString('about:blank'), 0);
+    raise EWBot.Create(EXCEPT_CEF_CONNECT);
   end;
+  Chromium.Browser.MainFrame.ExecuteJavaScript(UnicodeString(AScript),
+    UnicodeString('about:blank'), 0);
 end;
 
 procedure TWBotForm.ProcessQrCode(const AData: string);
@@ -322,50 +321,52 @@ begin
   end;
 end;
 
+procedure TWBotForm.CheckCEFApp;
+begin
+  if (GlobalCEFApp.Status <> asInitialized) then
+  begin
+    raise EWBot.Create(EXCEPT_CEF_APP);
+  end;
+end;
+
 procedure TWBotForm.Connect;
 var
   VStart: NativeUInt;
 begin
-  if (GlobalCEFApp.Initialized) then
-  begin
-    try
-      if (not(FConected)) then
-      begin     
-        InternalNotification(atConnecting);
-        VStart := GetTickCount64;  
-        FConected := Chromium.CreateBrowser(ChromiumWindow);
-        repeat
-          FConected := (Chromium.Initialized);
-          if (not (FConected)) then
+  CheckCEFApp;
+  try
+    if (not(FConected)) then
+    begin
+      InternalNotification(atConnecting);
+      VStart := GetTickCount64;
+      FConected := Chromium.CreateBrowser(ChromiumWindow);
+      repeat
+        FConected := (Chromium.Initialized);
+        if (not (FConected)) then
+        begin
+          Sleep(10);
+          Application.ProcessMessages;
+          if ((GetTickCount64 - VStart) > 20000) then
           begin
-            Sleep(10);
-            Application.ProcessMessages;
-            if ((GetTickCount64 - VStart) > 20000) then
-            begin
-              Break;
-            end;
+            Break;
           end;
-        until FConected;
-      end;
-    finally
-      TimerMonitoring.Enabled := FConected;
-      if (FConected) then
-      begin
-        Chromium.OnConsoleMessage := @ChromiumConsoleMessage;
-        Chromium.OnTitleChange := @ChromiumTitleChange;
-        Show;
-      end
-      else
-      begin
-        InternalNotification(atDisconnected);
-        raise EWBot.Create(EXCEPT_CEF_CONNECT);
-      end;
+        end;
+      until FConected;
+    end;
+  finally
+    TimerMonitoring.Enabled := FConected;
+    if (FConected) then
+    begin
+      Chromium.OnConsoleMessage := @ChromiumConsoleMessage;
+      Chromium.OnTitleChange := @ChromiumTitleChange;
+      Show;
+    end
+    else
+    begin
+      InternalNotification(atDisconnected);
+      raise EWBot.Create(EXCEPT_CEF_CONNECT);
     end;
   end;
-end;
-
-procedure TWBotForm.DisConnect;
-begin
 end;
 
 procedure TWBotForm.GetQrCode;

@@ -14,224 +14,67 @@ unit WBot_Config;
 interface
 
 uses
-  Classes, SysUtils, IniFiles, Forms, Dialogs, LCLType,
+  SysUtils, LResources, IniFiles,
   // CEF
-  uCEFApplication, uCEFChromium, uCEFTypes,
+  uCEFApplication,
   // WBot
-  WBot_Model, WBot_Const;
-
-type
-
-  { TCEFApp }
-
-  TCEFApp = class(TCEFApplication)
-  private
-    FChromium: TChromium;
-    FPathFramework: string;
-    FPathResources: string;
-    FPathLocales: string;
-    FPathCache: string;
-    FPathUserData: string; 
-    FInitialized: boolean;
-    FChanged: boolean;
-    FIniFile: TIniFile;
-    procedure SetChromium(const AValue: TChromium);
-    procedure SetPathFramework(const AValue: string);
-    procedure SetPathResources(const AValue: string);
-    procedure SetPathLocales(const AValue: string);
-    procedure SetPathCache(const AValue: string);
-    procedure SetPathUserData(const AValue: string);
-  protected
-    procedure Load;
-    procedure Save;
-    function CheckVersion: boolean;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    function StartMainProcess: boolean;
-  published
-    property Chromium: TChromium read FChromium write SetChromium;
-    property PathFramework: string read FPathFramework write SetPathFramework;
-    property PathResources: string read FPathResources write SetPathResources;
-    property PathLocales: string read FPathLocales write SetPathLocales;
-    property PathCache: string read FPathCache write SetPathCache;
-    property PathUserData: string read FPathUserData write SetPathUserData;
-    property Initialized: boolean read FInitialized;
-  end;
-
-var
-  GlobalCEFApp: TCEFApp = nil;
+  WBot_Const;
                            
-procedure InitializeGlobalCEFApp;
+function CreateGlobalCEFApp: boolean;
 procedure DestroyGlobalCEFApp;
 
 implementation
 
-procedure InitializeGlobalCEFApp;
+var
+  LocalIni: TIniFile = nil;
+
+procedure CreateLocalIni;
 begin
-  GlobalCEFApp := TCEFApp.Create;
-  GlobalCEFApp.WindowlessRenderingEnabled := True;
-  GlobalCEFApp.EnableHighDPISupport := True; 
-  GlobalCEFApp.EnableGPU := True;
-  GlobalCEFApp.DestroyApplicationObject := True; 
-  GlobalCEFApp.DisableFeatures := 'NetworkService';
-  GlobalCEFApp.StartMainProcess;
+  LocalIni := TIniFile.Create(WBOT_INI);
+end;
+
+procedure DestroyLocalIni;
+begin
+  FreeAndNil(LocalIni);
+end;
+
+function CreateGlobalCEFApp: boolean;
+begin
+  {$IfDef wbot_debug}
+  WriteLn(CreateGlobalCEFApp);
+  {$EndIf}
+  GlobalCEFApp := TCefApplication.Create;
+  GlobalCEFApp.FrameworkDirPath :=
+    UnicodeString(LocalIni.ReadString('Paths', 'FrameWork', 'cef'));
+  GlobalCEFApp.ResourcesDirPath :=
+    UnicodeString(LocalIni.ReadString('Paths', 'Resources', 'cef'));
+  GlobalCEFApp.LocalesDirPath := 
+    UnicodeString(LocalIni.ReadString('Paths', 'Locales', 'cef'+ PathDelim + 'locales'));
+  GlobalCEFApp.Cache :=
+    UnicodeString(LocalIni.ReadString('Paths', 'Cache', 'tmp' + PathDelim + 'cache'));
+  GlobalCEFApp.UserDataPath :=
+    UnicodeString(LocalIni.ReadString('Paths', 'UserData', 'tmp' + PathDelim + 'user'));
+
+  Result := GlobalCEFApp.StartMainProcess;
 end;
 
 procedure DestroyGlobalCEFApp;
 begin
-  FreeAndNil(GlobalCEFApp);
-end;
-
-{ TCEFApp }
-
-procedure TCEFApp.SetChromium(const AValue: TChromium);
-begin
-  if (FChromium <> AValue) and (Assigned(AValue)) then
-  begin
-    FChromium := AValue;
-  end;
-end;
-
-procedure TCEFApp.SetPathFramework(const AValue: string);
-begin
-  if (FPathFramework <> AValue) then
-  begin
-    FPathFramework := AValue;
-    FChanged := True;
-    FIniFile.WriteString('Paths', 'Framework', FPathFramework);
-  end;
-end;
-
-procedure TCEFApp.SetPathResources(const AValue: string);
-begin
-  if (FPathResources <> AValue) then
-  begin
-    FPathResources := AValue;
-    FChanged := True;
-    FIniFile.WriteString('Paths', 'Resources', FPathResources);
-  end;
-end;
-
-procedure TCEFApp.SetPathLocales(const AValue: string);
-begin
-  if (FPathLocales <> AValue) then
-  begin
-    FPathLocales := AValue;
-    FChanged := True;
-    FIniFile.WriteString('Paths', 'Locales', FPathLocales);
-  end;
-end;
-
-procedure TCEFApp.SetPathCache(const AValue: string);
-begin
-  if (FPathCache <> AValue) then
-  begin
-    FPathCache := AValue;
-    FChanged := True;
-    FIniFile.WriteString('Paths', 'Cache', FPathCache);
-  end;
-end;
-
-procedure TCEFApp.SetPathUserData(const AValue: string);
-begin
-  if (FPathUserData <> AValue) then
-  begin
-    FPathUserData := AValue;
-    FChanged := True;
-    FIniFile.WriteString('Paths', 'UserData', FPathUserData);
-  end;
-end;
-
-procedure TCEFApp.Load;
-begin
-  if (not (Assigned(FIniFile))) then
-  begin
-    FIniFile := TIniFile.Create(WBOT_INI);
-  end;
-
-  FPathFramework := FIniFIle.ReadString('Paths', 'FrameWork', 'cef');
-  FPathResources := FIniFIle.ReadString('Paths', 'Resources', 'cef');
-  FPathLocales := FIniFIle.ReadString('Paths', 'Locales', 'cef' +
-    PathDelim + 'locales');
-  FPathCache := FIniFIle.ReadString('Paths', 'Cache', 'tmp' +
-    PathDelim + 'cache');
-  FPathUserData := FIniFIle.ReadString('Paths', 'UserData', 'tmp' +
-    PathDelim + 'data_user');
-  FChanged := False;
-  FInitialized := True;
-
-  FrameworkDirPath := UnicodeString(FPathFramework);
-  ResourcesDirPath := UnicodeString(FPathResources);
-  LocalesDirPath := UnicodeString(FPathLocales);
-  Cache := UnicodeString(FPathCache);
-  UserDataPath := UnicodeString(FPathUserData);
-end;
-
-procedure TCEFApp.Save;
-begin
-  FIniFIle.WriteString('Paths', 'FrameWork', string(FrameworkDirPath));
-  FIniFIle.WriteString('Paths', 'Resources', string(ResourcesDirPath));
-  FIniFIle.WriteString('Paths', 'Locales', string(LocalesDirPath));
-  FIniFIle.WriteString('Paths', 'Cache', string(Cache));
-  FIniFIle.WriteString('Paths', 'UserData', string(UserDataPath));
-end;
-
-function TCEFApp.CheckVersion: boolean;
-begin
-  Result := (CEF_VERSION_MAJOR > CEF_SUPPORTED_VERSION_MAJOR) or
-    (CEF_VERSION_MAJOR = CEF_SUPPORTED_VERSION_MAJOR) and
-    (CEF_VERSION_MINOR >= CEF_SUPPORTED_VERSION_MINOR) and
-    (CEF_VERSION_REVIEW >= CEF_SUPPORTED_VERSION_BUILD);
-end;
-
-constructor TCEFApp.Create;
-begin
-  inherited Create;
-  Load;
-end;
-
-destructor TCEFApp.Destroy;
-begin
-  Save;
-  FreeAndNil(FIniFile);
-  inherited Destroy;
-end;
-
-function TCEFApp.StartMainProcess: boolean;
-var
-  VVersionRequired: string;
-  VVersionIdentified: string;
-begin
-  if (Status <> asInitialized) then
-  begin
-    if (not (CheckVersion)) then
-    begin
-      VVersionRequired := IntToStr(CEF_SUPPORTED_VERSION_MAJOR) + '.' +
-        IntToStr(CEF_SUPPORTED_VERSION_MINOR) + '.' +
-        IntToStr(CEF_SUPPORTED_VERSION_RELEASE);
-
-      VVersionIdentified := IntToStr(CEF_VERSION_MAJOR) + '.' +
-        IntToStr(CEF_VERSION_MINOR) + '.' +
-        IntToStr(CEF_VERSION_REVIEW);
-
-      Application.MessageBox(PChar(Format(EXCEPT_CEF_VERSION,
-        [VVersionRequired, VVersionIdentified])),
-        PChar(Application.Title), MB_ICONERROR + MB_OK);
-
-      FInitialized := False;
-      Result := False;
-      Exit;
-    end;
-  end;
-  inherited StartMainProcess;
+  LocalIni.WriteString('Paths', 'FrameWork', string(GlobalCEFApp.FrameworkDirPath));
+  LocalIni.WriteString('Paths', 'Resources', string(GlobalCEFApp.ResourcesDirPath));
+  LocalIni.WriteString('Paths', 'Locales', string(GlobalCEFApp.LocalesDirPath));
+  LocalIni.WriteString('Paths', 'Cache', string(GlobalCEFApp.Cache));
+  LocalIni.WriteString('Paths', 'UserData', string(GlobalCEFApp.UserDataPath));
+  FreeAndNil(GlobalCEFApp);   
+  {$IfDef wbot_debug}
+  WriteLn(DestroyGlobalCEFApp);
+  {$EndIf}
 end;
 
 initialization
-  InitializeGlobalCEFApp;
+  CreateLocalIni;
 
 finalization
-  DestroyGlobalCEFApp;
+  DestroyLocalIni;
 
 end.
-

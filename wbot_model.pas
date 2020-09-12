@@ -607,15 +607,6 @@ type
 
 implementation
 
-{
- _    _  _               _____
-| |  | || |             |_   _|   /|
-| |  | || |___  ___   ___ | |    / |__
-| |/\| ||  _  |/ _ \ / _ \| |   /_   /
-| /  \ || (_) | (_) | (_) | |     | /
-|__/\__||_____|\___/ \___/|_|     |/
-
-}
 uses
   // WBot
   WBot_Utils;
@@ -625,7 +616,7 @@ uses
 constructor TModel.Create;
 begin
   inherited Create;
-  FName := '';
+  FName := EmptyStr;
 end;
 
 function TModel.ActionType: TActionType;
@@ -652,7 +643,7 @@ function TModel.SaveJSON(const ABeautiful: boolean): string;
 var
   VJSON: TJSONData;
 begin
-  Result := '';
+  Result := EmptyStr;
   VJSON := ObjectToJSON(Self);
   if (Assigned(VJSON)) then
   begin
@@ -755,7 +746,7 @@ end;
 procedure TQrCode.AfterConstruction;
 begin         
   inherited AfterConstruction;
-  FQrCode := '';
+  FQrCode := EmptyStr;
   FQrCodeImage := TPicture.Create;
 end;
 

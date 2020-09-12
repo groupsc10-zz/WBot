@@ -17,27 +17,32 @@
       </Linking>
     </CompilerOptions>
     <Version Minor="1" Release="1" Build="1"/>
-    <Files Count="5">
+    <Files Count="6">
       <Item1>
         <Filename Value="wbot_const.pas"/>
         <UnitName Value="WBot_Const"/>
       </Item1>
       <Item2>
-        <Filename Value="wbot_model.pas"/>
-        <UnitName Value="WBot_Model"/>
+        <Filename Value="wbot_config.pas"/>
+        <UnitName Value="wbot_config"/>
       </Item2>
       <Item3>
         <Filename Value="wbot_utils.pas"/>
         <UnitName Value="WBot_Utils"/>
       </Item3>
       <Item4>
-        <Filename Value="wbot_config.pas"/>
-        <UnitName Value="WBot_Config"/>
+        <Filename Value="wbot_model.pas"/>
+        <UnitName Value="WBot_Model"/>
       </Item4>
       <Item5>
         <Filename Value="wbot_form.pas"/>
         <UnitName Value="WBot_Form"/>
       </Item5>
+      <Item6>
+        <Filename Value="wbot_core.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="WBot_Core"/>
+      </Item6>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>
@@ -54,5 +59,8 @@
       <Version Value="2"/>
       <UseFileFilters Value="True"/>
     </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
   </Package>
 </CONFIG>

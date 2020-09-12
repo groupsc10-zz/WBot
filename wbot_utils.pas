@@ -14,7 +14,7 @@ unit WBot_Utils;
 interface
 
 uses
-  Classes, SysUtils, TypInfo, fpjson, jsonparser, jsonscanner, base64,
+  Classes, SysUtils, TypInfo, fpjson, jsonparser, jsonscanner, base64, LResources,
   // Wbot
   WBot_Model, WBot_Const;
 
@@ -36,7 +36,9 @@ procedure JSONToObject(const AJSON: TJSONData;
 function ObjectToJSON(const AObject: TObject): TJSONData;
 
 procedure Base64ToStream(const AString: string; const AStream: TStream;
-  const AMode: TBase64DecodingMode = bdmMIME);
+  const AMode: TBase64DecodingMode = bdmMIME);  
+
+function ResourceToString(const AResourceName: string): string;
 
 function ReplaceVAR(const AScript, AVar, ANewValue: string): string;
 
@@ -74,7 +76,7 @@ var
   VStream: TFileStream;
   VLength: NativeInt;
 begin          
-  Result := '';
+  Result := EmptyStr;
   if (FileExists(AFileName)) then
   begin
     try
@@ -207,8 +209,7 @@ end;
 
 procedure JSONToObject(const AJSON: TJSONData; const AObject: TObject);
 var
-  VProp: PPropInfo; 
-  VPropName: string;
+  VProp: PPropInfo;
   VProps: PPropList;
   VPropsCount: NativeInt;
   VIndex: NativeInt;
@@ -414,7 +415,7 @@ var
   VDecoder: TBase64DecodingStream;
   VStream: TStringStream;
 begin
-  if (AString <> '') then
+  if (AString <> EmptyStr) then
   begin
     VStream := TStringStream.Create(AString);
     try
@@ -426,6 +427,29 @@ begin
       end;
     finally
       VStream.Free;
+    end;
+  end;
+end;
+
+function ResourceToString(const AResourceName: string): string;
+var                                 
+  VStream: TStringStream;
+  VResource: TLazarusResourceStream;
+begin
+  Result := EmptyStr;
+  if (AResourceName <> EmptyStr) then
+  begin                                    
+    VStream := TStringStream.Create(EmptyStr);
+    try
+      try
+        VResource := TLazarusResourceStream.Create(AResourceName, nil);
+        VResource.SaveToStream(VStream);
+        Result := VStream.DataString;
+      except
+      end;
+    finally
+      FreeAndNil(VStream);
+      FreeAndNil(VResource);
     end;
   end;
 end;

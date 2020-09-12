@@ -8,12 +8,14 @@ unit WBot_Pack;
 interface
 
 uses
-  WBot_Const, WBot_Model, WBot_Utils, WBot_Config, WBot_Form, LazarusPackageIntf;
+  WBot_Const, WBot_Config, WBot_Utils, WBot_Model, WBot_Form, WBot_Core, 
+  LazarusPackageIntf;
 
 implementation
 
 procedure Register;
 begin
+  RegisterUnit('WBot_Core', @WBot_Core.Register);
 end;
 
 initialization
