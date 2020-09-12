@@ -24,7 +24,6 @@
 
 ## Feature to be implemented
 - Tests
-- Caching
 - Others
 
 
