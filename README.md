@@ -1,4 +1,4 @@
-<img alt="Logo" src="https://raw.githubusercontent.com/groupsc10/WBot/master/logo/logo.png?token=AMJ6WS2I2XFU7UYXAOFCIJK7LTXSY">
+<img alt="Logo" src="https://github.com/groupsc10/WBot/blob/master/logo/logo.png">
 
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/groupsc10/RSQL/LICENSE.txt)
