@@ -35,4 +35,4 @@ Contributions are welcome! Please, open an issue before submit any kind (ideas, 
 
 
 ## License
-This project is released under MIT license. See [LICENSE.txt](LICENSE).
+This project is released under MIT license. See [LICENSE](LICENSE.txt).
