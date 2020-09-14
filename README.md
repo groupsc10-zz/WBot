@@ -27,7 +27,11 @@
 - Tests
 - Others
 
+## Donating
 
+You can support the maintainer of this project through the link below
+
+[![Donate via PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=Y85CKHM96Z27G&currency_code=BRL&source=url)
 
 ## Contributions
 Contributions are welcome! Please, open an issue before submit any kind (ideas, documentation, code, ...) of contribution.
