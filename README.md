@@ -27,6 +27,10 @@
 - Tests
 - Others
 
+## Help
+
+[Forum](https://sc10.com.br/forum/viewforum.php?f=10&sid=ee6c915f30a0f8268fb1dae38759ffe0)
+
 ## Donating
 
 You can support the maintainer of this project through the link below
