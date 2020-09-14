@@ -36,7 +36,7 @@ Contributions are welcome! Please, open an issue before submit any kind (ideas, 
 
 Parts of this work were inspired by the following project:
 
-<br />
+
 [Projeto-TInject](https://github.com/mikelustosa/Projeto-TInject)
 
 ## License
