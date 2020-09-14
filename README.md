@@ -10,7 +10,7 @@
 
 **WBOT** This package is used to provide a clean interface for developers interacting with WhatsAPP Web to send and receive Whatsapp messages. It is based on the official Whatsapp Web Browser Application and uses Chromium browser automation to communicate with Whatsapp Web.
 
-## Features.
+## Features
 
 - Login
 - Logout
