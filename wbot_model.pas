@@ -123,6 +123,8 @@ type
   { TResponseBattery }
 
   TResponseBattery = class(TResponse)
+  published
+
   end;
 
   { TResponseGroups }

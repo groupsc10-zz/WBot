@@ -52,7 +52,7 @@ type
     FStep: NativeInt;
     FZoom: NativeInt;
     FLastQrCode: string; 
-    FMonitorLowBattery: boolean;
+    FMonitorBattery: boolean;
     FMonitorUnreadMsgs: boolean;
     FOnError: TErrorEvent;
     FOnNotification: TNotificationEvent;
@@ -70,24 +70,26 @@ type
     procedure ProcessQrCode(const AData: string);
   public   
     procedure Connect;
+    procedure Disconnect;
   public
     procedure GetQrCode;
     procedure GetBatteryLevel; 
     procedure GetUnreadMessages;  
     procedure GetAllContacts; 
     procedure GetAllGroups;
+    procedure Logout;
     procedure SendMsg(const ANumber, AMsg: string);
   public
     property Conected: boolean read FConected;
     property Authenticated: boolean read FAuthenticated;
     property Browser: Boolean read FBrowser write FBrowser;
-    property MonitorLowBattery: boolean
-      read FMonitorLowBattery write FMonitorLowBattery;
+    property MonitorBattery: boolean
+      read FMonitorBattery write FMonitorBattery;
     property MonitorUnreadMsgs: boolean
-      read FMonitorUnreadMsgs write FMonitorUnreadMsgs;
+      read FMonitorUnreadMsgs write FMonitorUnreadMsgs;   
+    property OnError: TErrorEvent read FOnError write FOnError;
     property OnNotification: TNotificationEvent
       read FOnNotification write FOnNotification;
-    property OnError: TErrorEvent read FOnError write FOnError;
   end;
 
 var
@@ -108,7 +110,7 @@ begin
   FStep := 0;
   FZoom := 1;
   FLastQrCode := EmptyStr;
-  FMonitorLowBattery := True;
+  FMonitorBattery := True;
   FMonitorUnreadMsgs := True;
   FOnError := nil;
   FOnNotification:= nil;
@@ -176,7 +178,7 @@ begin
   try
     if (FAuthenticated) then
     begin
-      if (FMonitorLowBattery) then
+      if (FMonitorBattery) then
       begin
         GetBatteryLevel;
       end;
@@ -323,7 +325,8 @@ end;
 
 procedure TWBotForm.CheckCEFApp;
 begin
-  if (GlobalCEFApp.Status <> asInitialized) then
+  if (not(Assigned(GlobalCEFApp))) or
+    (GlobalCEFApp.Status <> asInitialized) then
   begin
     raise EWBot.Create(EXCEPT_CEF_APP);
   end;
@@ -369,6 +372,26 @@ begin
   end;
 end;
 
+procedure TWBotForm.Disconnect;
+begin
+  if (not(FConected)) then
+  begin
+    Exit;
+  end;
+  try
+    TimerConnect.Enabled := False;
+    TimerMonitoring.Enabled := False;
+    Chromium.StopLoad;
+    Chromium.CloseBrowser(True);
+    Sleep(200);
+    FStep := 0;     
+    FLastQrCode := EmptyStr;
+    FConected := False;   
+    //InternalNotification(atDisconnected);
+  except
+  end;
+end;
+
 procedure TWBotForm.GetQrCode;
 begin
   if (not(FBrowser)) then
@@ -395,6 +418,11 @@ end;
 procedure TWBotForm.GetAllGroups;
 begin
   ExecuteScript(CMD_GET_ALL_GROUPS);
+end;
+
+procedure TWBotForm.Logout;
+begin
+  ExecuteScript(CMD_LOGOUT);
 end;
 
 procedure TWBotForm.SendMsg(const ANumber, AMsg: string);

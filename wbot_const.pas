@@ -39,7 +39,9 @@ const
   CMD_GET_ALL_CONTACTS =
     'window.WAPI.getAllContacts();';
   CMD_GET_ALL_CHATS =
-    'window.WAPI.getAllChats();';
+    'window.WAPI.getAllChats();';  
+  CMD_LOGOUT =
+    'localStorage.clear(); location.reload();';
 
 resourcestring
   EXCEPT_CEF_APP =

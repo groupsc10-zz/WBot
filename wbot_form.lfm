@@ -1,7 +1,7 @@
 object WBotForm: TWBotForm
-  Left = 511
+  Left = 718
   Height = 550
-  Top = 197
+  Top = 186
   Width = 820
   Caption = 'WBotForm'
   ClientHeight = 550
@@ -21,15 +21,6 @@ object WBotForm: TWBotForm
     Panels = <>
     ParentColor = False
   end
-  object QrCodeImg: TImage
-    Left = 0
-    Height = 526
-    Top = 0
-    Width = 820
-    Align = alClient
-    Center = True
-    Visible = False
-  end
   object ChromiumWindow: TCEFWindowParent
     Left = 0
     Height = 526
@@ -37,6 +28,15 @@ object WBotForm: TWBotForm
     Width = 820
     Align = alClient
     TabOrder = 1
+    Visible = False
+  end
+  object QrCodeImg: TImage
+    Left = 0
+    Height = 526
+    Top = 0
+    Width = 820
+    Align = alClient
+    Center = True
     Visible = False
   end
   object Chromium: TChromium
