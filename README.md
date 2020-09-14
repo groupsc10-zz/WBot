@@ -34,9 +34,8 @@ Contributions are welcome! Please, open an issue before submit any kind (ideas, 
 
 ## Credits
 
-Parts of this work were inspired by the following projects:
+Parts of this work were inspired by the following project:
 
-[TInject-whatsapp-delphi](https://github.com/eldon689/TInject-whatsapp-delphi)
 <br />
 [Projeto-TInject](https://github.com/mikelustosa/Projeto-TInject)
 
