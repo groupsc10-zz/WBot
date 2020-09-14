@@ -32,7 +32,13 @@
 ## Contributions
 Contributions are welcome! Please, open an issue before submit any kind (ideas, documentation, code, ...) of contribution.
 
+## Credits
 
+Parts of this work were inspired by the following projects:
+
+[TInject-whatsapp-delphi](https://github.com/eldon689/TInject-whatsapp-delphi)
+<br />
+[Projeto-TInject](https://github.com/mikelustosa/Projeto-TInject)
 
 ## License
 This project is released under MIT license. See [LICENSE](LICENSE.txt).
