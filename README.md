@@ -34,10 +34,7 @@ Contributions are welcome! Please, open an issue before submit any kind (ideas, 
 
 ## Credits
 
-Parts of this work were inspired by the following project:
-
-
-[Projeto-TInject](https://github.com/mikelustosa/Projeto-TInject)
+Parts of this work were inspired by the following project: [Projeto-TInject](https://github.com/mikelustosa/Projeto-TInject)
 
 ## License
 This project is released under MIT license. See [LICENSE](LICENSE.txt).
