@@ -43,6 +43,7 @@ type
     FVersion: string;
     function GetAuthenticated: boolean;
     function GetConected: boolean;
+    procedure SetUnreadMsgs(AValue: boolean);
   protected
     procedure InternalError(const ASender: TObject; const AError: string;
       const AAdditionalInformation: string);  
@@ -61,6 +62,7 @@ type
     procedure SendArchive(const APhone, AArchive, AMsg: string);
     procedure SendContact(const APhone, AContact: string);   
     procedure SendMsg(const APhone, AMsg: string);
+    procedure ReadMsg(const APhone: String);
   public                
     property Authenticated: boolean read GetAuthenticated;
     property Conected: boolean read GetConected;
@@ -75,7 +77,7 @@ type
     property MonitorBattery: boolean
       read FMonitorBattery write FMonitorBattery default True;
     property MonitorUnreadMsgs: boolean
-      read FMonitorUnreadMsgs write FMonitorUnreadMsgs default True;
+      read FMonitorUnreadMsgs write SetUnreadMsgs default True;
     property Version: string read FVersion;
     // Events
     property OnConnected: TNotifyEvent
@@ -121,6 +123,14 @@ begin
     Exit;
   end;
   Result := FForm.Conected;
+end;
+
+procedure TWBot.SetUnreadMsgs(AValue: boolean);
+begin
+  if FMonitorUnreadMsgs=AValue then
+    Exit;
+  FMonitorUnreadMsgs:=AValue;
+  FForm.MonitorUnreadMsgs:=FMonitorUnreadMsgs;
 end;
 
 procedure TWBot.InternalError(const ASender: TObject; const AError: string;
@@ -279,6 +289,11 @@ procedure TWBot.SendMsg(const APhone, AMsg: string);
 begin
   // TODO: Check phone structure
   FForm.SendMsg(APhone, AMsg);
+end;
+
+procedure TWBot.ReadMsg(const APhone: String);
+begin
+  FForm.ReadMsg(APhone);
 end;
 
 end.

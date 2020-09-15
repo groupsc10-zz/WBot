@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="11">
+      <Unit0>
+        <Filename Value="Demo.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="9" Y="18"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="unit_main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <TopLine Value="82"/>
+        <CursorPos X="102" Y="85"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\wbot_core.pas"/>
+        <UnitName Value="WBot_Core"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="126"/>
+        <CursorPos X="47" Y="133"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\wbot_model.pas"/>
+        <UnitName Value="WBot_Model"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="43"/>
+        <CursorPos X="5" Y="74"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\wbot_form.pas"/>
+        <UnitName Value="WBot_Form"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="177"/>
+        <CursorPos X="8" Y="182"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\wbot_config.pas"/>
+        <UnitName Value="WBot_Config"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="41"/>
+        <CursorPos X="3" Y="43"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\wbot.inc"/>
+        <EditorIndex Value="6"/>
+        <CursorPos X="3" Y="3"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="D:\programs\lazarus_stable_win\lazarus\lcl\interfaces\win32\win32object.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="605"/>
+        <CursorPos Y="624"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\wbot_const.pas"/>
+        <UnitName Value="WBot_Const"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="12"/>
+        <CursorPos X="39" Y="49"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="D:\programs\lazarus_stable_win\lazarus\lcl\graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="46"/>
+        <CursorPos X="3" Y="66"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="D:\programs\lazarus_stable_win\lazarus\components\lazutils\graphtype.pp"/>
+        <UnitName Value="GraphType"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="19"/>
+        <CursorPos X="3" Y="35"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit10>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="287" Column="23" TopLine="57"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="34" Column="23" TopLine="15"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="78" Column="31" TopLine="47"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="79" Column="55" TopLine="48"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="225" Column="21" TopLine="193"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="238" Column="26" TopLine="206"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="72" Column="15" TopLine="54"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="341" Column="3" TopLine="342"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="91" Column="55" TopLine="57"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="56" Column="23" TopLine="37"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="90" Column="31" TopLine="59"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="91" Column="55" TopLine="60"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="116" Column="21" TopLine="84"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="179" Column="18" TopLine="155"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="33" Column="20" TopLine="14"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="38" Column="32" TopLine="14"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="177" Column="38" TopLine="145"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="179" Column="18" TopLine="147"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="193" Column="20" TopLine="161"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="362" Column="20" TopLine="330"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="385" Column="20" TopLine="353"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="72" Column="19" TopLine="45"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="362" Column="25" TopLine="343"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\wbot_form.pas"/>
+        <Caret Line="38" Column="24" TopLine="25"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="238" Column="26" TopLine="215"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="80" Column="40" TopLine="56"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="55" Column="17" TopLine="32"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="247" Column="49" TopLine="242"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="53" Column="20" TopLine="37"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\wbot_core.pas"/>
+        <Caret Line="46" Column="21" TopLine="39"/>
+      </Position30>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

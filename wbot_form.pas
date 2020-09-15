@@ -80,6 +80,7 @@ type
     procedure Logout;                    
     procedure SendContact(const ANumber, AContact: string);
     procedure SendMsg(const ANumber, AMsg: string);
+    procedure ReadMsg(const ANumber: String);
   public
     property Conected: boolean read FConected;
     property Authenticated: boolean read FAuthenticated;
@@ -443,6 +444,15 @@ begin
   VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_MSG;
   VScript := ReplaceVAR(VScript, '<#PHONE#>', Trim(ANumber));
   VScript := ReplaceVAR(VScript, '<#MSG#>', Trim(AMsg));
+  ExecuteScript(VScript);
+end;
+
+procedure TWBotForm.ReadMsg(const ANumber: String);
+var
+  VScript: string;
+begin
+  VScript := CMD_READ_MSG;
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', Trim(ANumber));
   ExecuteScript(VScript);
 end;
 

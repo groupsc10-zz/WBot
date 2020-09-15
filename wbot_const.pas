@@ -45,6 +45,9 @@ const
   CMD_LOGOUT =
     'localStorage.clear(); location.reload();';
 
+  CMD_READ_MSG =
+    'window.WAPI.sendSeen("<#PHONE#>")';
+
 resourcestring
   EXCEPT_CEF_APP =
     'Component GlobalCEFApp has not been initialized in your application.';
