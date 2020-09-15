@@ -77,7 +77,8 @@ type
     procedure GetUnreadMessages;  
     procedure GetAllContacts; 
     procedure GetAllGroups;
-    procedure Logout;
+    procedure Logout;                    
+    procedure SendContact(const ANumber, AContact: string);
     procedure SendMsg(const ANumber, AMsg: string);
   public
     property Conected: boolean read FConected;
@@ -425,13 +426,23 @@ begin
   ExecuteScript(CMD_LOGOUT);
 end;
 
+procedure TWBotForm.SendContact(const ANumber, AContact: string);
+var
+  VScript: string;
+begin
+  VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_CONTACT;
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', Trim(ANumber));
+  VScript := ReplaceVAR(VScript, '<#CONTACT#>', Trim(AContact));
+  ExecuteScript(VScript);
+end;
+
 procedure TWBotForm.SendMsg(const ANumber, AMsg: string);
 var
   VScript: string;
 begin
   VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_MSG;
-  VScript := ReplaceVAR(VScript, '<#MSG_PHONE#>', Trim(ANumber));
-  VScript := ReplaceVAR(VScript, '<#MSG_BODY#>', Trim(AMsg));
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', Trim(ANumber));
+  VScript := ReplaceVAR(VScript, '<#MSG#>', Trim(AMsg));
   ExecuteScript(VScript);
 end;
 

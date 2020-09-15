@@ -23,9 +23,11 @@ const
   WBOT_INI = 'wbot.ini';
 
   CMD_SEND_CHAT_STATE =
-    'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
+    'Store.WapQuery.sendChatstateComposing("<#PHONE#>");';
   CMD_SEND_MSG =
-    'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_BODY#>")';
+    'window.WAPI.sendMessageToID("<#PHONE#>","<#MSG#>")';
+  CMD_SEND_CONTACT
+    = 'window.WAPI.sendContact("<#PHONE#>", "<#CONTACT#>")';
 
   CMD_GET_QRCODE =
     'var _qrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");' + LineEnding +

@@ -18,8 +18,10 @@ uses
   //WBot
   WBot_Model, WBot_Form;
 
-type      
-  TGetAllContactsEvent = procedure(const ASender: TObject;
+type            
+  TRequestChatEvent = procedure(const ASender: TObject;
+    const AChats: TResponseChat) of object;
+  TRequestContactsEvent = procedure(const ASender: TObject;
     const ACantacts: TResponseContact) of object;
 
   { TWBot }
@@ -32,10 +34,11 @@ type
     FMonitorUnreadMsgs: boolean;
     FOnConnected: TNotifyEvent;
     FOnDisconnected: TNotifyEvent;
-    FOnError: TErrorEvent; 
-    FOnGetAllContact: TGetAllContactsEvent;
-    FOnNotification: TNotificationEvent; 
+    FOnError: TErrorEvent;
     FOnLowBatteryLevel: TNotifyEvent;
+    FOnNotification: TNotificationEvent; 
+    FOnRequestChat: TRequestChatEvent;
+    FOnRequestContact: TRequestContactsEvent;
     FForm: TWBotForm;    
     FVersion: string;
     function GetAuthenticated: boolean;
@@ -53,7 +56,8 @@ type
     procedure GetAllContacts;
     procedure GetAllGroups;
     procedure GetBatteryLevel;
-    procedure GetUnreadMessages;
+    procedure GetUnreadMessages; 
+    //procedure Logout;
     procedure SendArchive(const APhone, AArchive, AMsg: string);
     procedure SendContact(const APhone, AContact: string);   
     procedure SendMsg(const APhone, AMsg: string);
@@ -77,11 +81,13 @@ type
     property OnConnected: TNotifyEvent
       read FOnConnected write FOnConnected;
     property OnDisconnected: TNotifyEvent
-      read FOnDisconnected write FOnDisconnected;
-    property OnGetAllContact: TGetAllContactsEvent
-      read FOnGetAllContact write FOnGetAllContact;
+      read FOnDisconnected write FOnDisconnected; 
     property OnLowBatteryLevel: TNotifyEvent
-      read FOnLowBatteryLevel write FOnLowBatteryLevel;
+      read FOnLowBatteryLevel write FOnLowBatteryLevel; 
+    property OnRequestChat: TRequestChatEvent
+      read FOnRequestChat write FOnRequestChat;
+    property OnRequestContact: TRequestContactsEvent
+      read FOnRequestContact write FOnRequestContact;
   end;
 
 procedure Register;
@@ -128,7 +134,8 @@ end;
 
 procedure TWBot.InternalNotification(const ASender: TObject;
   const AAction: TActionType; const AData: string);
-var
+var                              
+  VResponseChat: TResponseChat;
   VResponseContact: TResponseContact;  
   VResponseBattery: TResponseBattery;
 begin
@@ -173,14 +180,29 @@ begin
 
     atGetAllContacts:
     begin
-      if (Assigned(FOnGetAllContact)) then
+      if (Assigned(FOnRequestContact)) then
       begin
         VResponseContact := TResponseContact.Create;
         try
           VResponseContact.LoadJSON(AData);
-          FOnGetAllContact(Self, VResponseContact);
+          FOnRequestContact(Self, VResponseContact);
         finally
           FreeAndNil(VResponseContact);
+        end;
+      end;
+    end;
+
+    atGetAllChats,
+    atGetUnreadMessages:
+    begin
+      if (Assigned(FOnRequestChat)) then
+      begin
+        VResponseChat := TResponseChat.Create;
+        try
+          VResponseChat.LoadJSON(AData);
+          FOnRequestChat(Self, VResponseChat);
+        finally
+          FreeAndNil(VResponseChat);
         end;
       end;
     end;
@@ -198,8 +220,8 @@ begin
   end;
   FBrowser := True;
   FLowBatteryLevel := 10;
-  FMonitorBattery := False;
-  FMonitorUnreadMsgs:= False;
+  FMonitorBattery := True;
+  FMonitorUnreadMsgs:= True;
   FVersion := WBOT_VERSION;
 end;
 
@@ -247,12 +269,15 @@ begin
 end;
 
 procedure TWBot.SendContact(const APhone, AContact: string);
-begin
+begin                      
+  // TODO: Check phone structure
+  FForm.SendContact(APhone, AContact);
 
 end;
 
 procedure TWBot.SendMsg(const APhone, AMsg: string);
 begin
+  // TODO: Check phone structure
   FForm.SendMsg(APhone, AMsg);
 end;
 
