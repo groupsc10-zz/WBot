@@ -42,6 +42,8 @@ function ResourceToString(const AResourceName: string): string;
 
 function ReplaceVAR(const AScript, AVar, ANewValue: string): string;
 
+function NormalizeString(const AValue: string): string;
+
 function StringToActionType(const AValue: string): TActionType;
 
 function ActionTypeToString(const AValue: TActionType): string;
@@ -462,9 +464,17 @@ begin
   Result := VVar;
   if (Length(VVar) > 2) then
   begin
-    Result := StringReplace(AScript, VVar, ANewValue,
+    Result := StringReplace(AScript, Trim(VVar), Trim(ANewValue),
       [rfReplaceAll, rfIgnoreCase]);
   end;
+end;
+
+function NormalizeString(const AValue: string): string;
+begin
+  Result := StringReplace(AValue, LineEnding, '\n', [rfReplaceAll]);
+  Result := StringReplace(Result, #13, '', [rfReplaceAll]);
+  Result := StringReplace(Result, '"', '\"', [rfReplaceAll]);
+  Result := StringReplace(Result, #$A, '', [rfReplaceAll]);
 end;
 
 function StringToActionType(const AValue: string): TActionType;

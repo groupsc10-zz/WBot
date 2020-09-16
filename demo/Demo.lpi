@@ -51,9 +51,6 @@
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
-    <Target>
-      <Filename Value="D:\Projetos\WBot\bin\Demo"/>
-    </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>

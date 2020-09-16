@@ -42,7 +42,6 @@ object WBotForm: TWBotForm
   object Chromium: TChromium
     OnTitleChange = ChromiumTitleChange
     OnConsoleMessage = ChromiumConsoleMessage
-    OnAfterCreated = ChromiumAfterCreated
     Left = 72
     Top = 24
   end

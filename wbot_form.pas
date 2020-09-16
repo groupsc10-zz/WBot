@@ -14,7 +14,8 @@ unit WBot_Form;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls, LResources,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
+  LResources,
   // CEF
   uCEFWindowParent, uCEFChromium, uCEFTypes, uCEFInterfaces, uCEFApplication,
   // WBot
@@ -36,9 +37,6 @@ type
     procedure FormShow(Sender: TObject);  
     procedure OnTimerConnect(Sender: TObject);
     procedure OnTimerMonitoring(Sender: TObject);
-    // Chromium
-    procedure ChromiumAfterCreated(Sender: TObject;
-      const {%H-}ABrowser: ICefBrowser);
     procedure ChromiumConsoleMessage(Sender: TObject;
       const {%H-}ABrowser: ICefBrowser; {%H-}ALevel: TCefLogSeverity;
       const AMessage, {%H-}ASource: ustring; {%H-}ALine: Integer;
@@ -67,20 +65,20 @@ type
     procedure ExecuteScript(const AScript: string;
       const ADirect: boolean = False);
   protected
-    procedure ProcessQrCode(const AData: string);
+    procedure ProcessQrCode(const AData: string);  
+    procedure Logout;
   public   
     procedure Connect;
-    procedure Disconnect;
+    procedure Disconnect(const ALogout: boolean = False);
   public
     procedure GetQrCode;
     procedure GetBatteryLevel; 
     procedure GetUnreadMessages;  
     procedure GetAllContacts; 
     procedure GetAllGroups;
-    procedure Logout;                    
+    procedure ReadMsg(const ANumber: String);
     procedure SendContact(const ANumber, AContact: string);
     procedure SendMsg(const ANumber, AMsg: string);
-    procedure ReadMsg(const ANumber: String);
   public
     property Conected: boolean read FConected;
     property Authenticated: boolean read FAuthenticated;
@@ -158,9 +156,9 @@ begin
       {$EndIf}
       ExecuteScript(VScript, True);
       Sleep(50);
-      if (FBrowser) then
+      if (Not(FBrowser)) then
       begin
-        //TODO: Self Close/Hide
+        Hide;
       end;
       VStatus := False;
       InternalNotification(atInitialized);
@@ -194,17 +192,11 @@ begin
   end;
 end;
 
-procedure TWBotForm.ChromiumAfterCreated(Sender: TObject;
-  const ABrowser: ICefBrowser);
-begin
-  TimerConnect.Enabled := True;
-end;
-
 procedure TWBotForm.ChromiumConsoleMessage(Sender: TObject;
   const ABrowser: ICefBrowser; ALevel: TCefLogSeverity;
   const AMessage, ASource: ustring; ALine: Integer; out AResult: Boolean);
 var
-  VModel: TResponseConsole;
+  VConsole: TResponseConsole;
   VAction: TActionType;
 begin
   {$IfDef wbot_debug}  
@@ -215,10 +207,10 @@ begin
   begin
     Exit;
   end;
-  VModel := TResponseConsole.Create;
+  VConsole := TResponseConsole.Create;
   try  
-    VModel.LoadJSON(string(AMessage));
-    VAction := VModel.ActionType;
+    VConsole.LoadJSON(string(AMessage));
+    VAction := VConsole.ActionType;
     // Redirect
     case VAction of
       atNone:
@@ -227,16 +219,16 @@ begin
       end;  
       atGetQrCode:
       begin
-        ProcessQrCode(VModel.SaveJSON);
+        ProcessQrCode(VConsole.SaveJSON);
         InternalNotification(VAction);
       end;
       else
       begin
-        InternalNotification(VAction, VModel.Result);
+        InternalNotification(VAction, VConsole.Result);
       end;
     end;
   finally
-    FreeAndNil(VModel);
+    FreeAndNil(VConsole);
   end;
 end;
 
@@ -253,6 +245,23 @@ begin
   if (FStep <= 3) then
   begin
     SetZoom(-2);
+  end;
+end;    
+
+procedure TWBotForm.SetZoom(const AValue: NativeInt);
+var
+  VIndex: NativeInt;
+  VZoom: NativeInt;
+begin
+  if (FZoom <> AValue) then
+  begin
+    FZoom := AValue;
+    Chromium.ResetZoomStep;
+    VZoom := (FZoom * (-1));
+    for VIndex := 0 to (VZoom - 1) do
+    begin
+      Chromium.DecZoomStep;
+    end;
   end;
 end;
 
@@ -288,41 +297,29 @@ end;
 
 procedure TWBotForm.ProcessQrCode(const AData: string);
 var
-  VModel: TResponseQrCode;
+  VQrCode: TResponseQrCode;
 begin
   if (FLastQrCode <> AData) then
   begin                  
     FLastQrCode := AData;
-    VModel := TResponseQrCode.Create;
+    VQrCode := TResponseQrCode.Create;
     try
-      VModel.LoadJSON(FLastQrCode);
-      QrCodeImg.Picture.Assign(VModel.Result.QrCodeImage);
+      VQrCode.LoadJSON(FLastQrCode);
+      QrCodeImg.Picture.Assign(VQrCode.Result.QrCodeImage);
       if (Assigned(QrCodeImg.Picture.Graphic))  and
         (not(QrCodeImg.Picture.Graphic.Empty)) then
       begin
         StatusBar.SimpleText := QRCODE_SUCCESS;
       end;
     finally
-      FreeAndNil(VModel);
+      FreeAndNil(VQrCode);
     end;
   end;
-end;
+end;   
 
-procedure TWBotForm.SetZoom(const AValue: NativeInt);
-var
-  VIndex: NativeInt;
-  VZoom: NativeInt;
+procedure TWBotForm.Logout;
 begin
-  if (FZoom <> AValue) then
-  begin
-    FZoom := AValue;
-    Chromium.ResetZoomStep;
-    VZoom := (FZoom * (-1));
-    for VIndex := 0 to (VZoom - 1) do
-    begin
-      Chromium.DecZoomStep;
-    end;
-  end;
+  ExecuteScript(CMD_LOGOUT);
 end;
 
 procedure TWBotForm.CheckCEFApp;
@@ -358,12 +355,14 @@ begin
         end;
       until FConected;
     end;
-  finally
+  finally                                
+    TimerConnect.Enabled := FConected;
     TimerMonitoring.Enabled := FConected;
     if (FConected) then
     begin
       Chromium.OnConsoleMessage := @ChromiumConsoleMessage;
       Chromium.OnTitleChange := @ChromiumTitleChange;
+      Chromium.Reload;
       Show;
     end
     else
@@ -374,22 +373,29 @@ begin
   end;
 end;
 
-procedure TWBotForm.Disconnect;
+procedure TWBotForm.Disconnect(const ALogout: boolean);
 begin
   if (not(FConected)) then
   begin
     Exit;
   end;
   try
+    if (ALogout) then
+    begin
+      Logout;
+      Sleep(50);
+    end;
     TimerConnect.Enabled := False;
     TimerMonitoring.Enabled := False;
     Chromium.StopLoad;
-    Chromium.CloseBrowser(True);
-    Sleep(200);
+    //Chromium.CloseBrowser(True);
+    Sleep(600);
     FStep := 0;     
-    FLastQrCode := EmptyStr;
-    FConected := False;   
-    //InternalNotification(atDisconnected);
+    FLastQrCode := EmptyStr; 
+    FAuthenticated:= False;
+    FConected := False;     
+    Hide;
+    InternalNotification(atDisconnected);
   except
   end;
 end;
@@ -422,18 +428,22 @@ begin
   ExecuteScript(CMD_GET_ALL_GROUPS);
 end;
 
-procedure TWBotForm.Logout;
-begin
-  ExecuteScript(CMD_LOGOUT);
-end;
-
 procedure TWBotForm.SendContact(const ANumber, AContact: string);
 var
   VScript: string;
 begin
   VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_CONTACT;
-  VScript := ReplaceVAR(VScript, '<#PHONE#>', Trim(ANumber));
-  VScript := ReplaceVAR(VScript, '<#CONTACT#>', Trim(AContact));
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
+  VScript := ReplaceVAR(VScript, '<#CONTACT#>', AContact);
+  ExecuteScript(VScript);
+end;      
+
+procedure TWBotForm.ReadMsg(const ANumber: String);
+var
+  VScript: string;
+begin
+  VScript := CMD_READ_MSG;
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
   ExecuteScript(VScript);
 end;
 
@@ -442,17 +452,8 @@ var
   VScript: string;
 begin
   VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_MSG;
-  VScript := ReplaceVAR(VScript, '<#PHONE#>', Trim(ANumber));
-  VScript := ReplaceVAR(VScript, '<#MSG#>', Trim(AMsg));
-  ExecuteScript(VScript);
-end;
-
-procedure TWBotForm.ReadMsg(const ANumber: String);
-var
-  VScript: string;
-begin
-  VScript := CMD_READ_MSG;
-  VScript := ReplaceVAR(VScript, '<#PHONE#>', Trim(ANumber));
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
+  VScript := ReplaceVAR(VScript, '<#MSG#>', AMsg);
   ExecuteScript(VScript);
 end;
 

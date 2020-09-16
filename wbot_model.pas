@@ -70,9 +70,23 @@ type
 
   generic TGModelList<T: class> = class(TModelList)
   private
+    type
+      TGModelListEnumerator = class
+      private                
+        FList: TGModelList;
+        FPosition: NativeInt;
+        function GetCurrent: T;
+      public
+        constructor Create(const AList: TGModelList);
+        function MoveNext: boolean;
+      public
+        property Current: T read GetCurrent;
+      end;
+  private
     function GetItem(const AIndex: NativeInt): T;
   public
-    procedure Add(const AItem: T);
+    procedure Add(const AItem: T);    
+    function GetEnumerator: TGModelListEnumerator;
     function ItemClass: TModelClass; override;
     property Items[const AIndex: NativeInt]: T read GetItem; default;
   end;
@@ -696,6 +710,26 @@ begin
   Result := FItems.Count;
 end;
 
+{ TGModelList.TGModelListEnumerator }
+
+function TGModelList.TGModelListEnumerator.GetCurrent: T;
+begin
+  Result := FList[FPosition];
+end;
+
+constructor TGModelList.TGModelListEnumerator.Create(const AList: TGModelList);
+begin
+  inherited Create;
+  FList := AList;
+  FPosition := -1;
+end;
+
+function TGModelList.TGModelListEnumerator.MoveNext: boolean;
+begin
+  Inc(FPosition);
+  Result := FPosition < FList.Count;
+end;
+
 { TGModelList }
 
 function TGModelList.GetItem(const AIndex: NativeInt): T;
@@ -706,6 +740,11 @@ end;
 procedure TGModelList.Add(const AItem: T);
 begin
   inherited Add(AItem);
+end;
+
+function TGModelList.GetEnumerator: TGModelListEnumerator;
+begin
+  Result := TGModelListEnumerator.Create(Self);
 end;
 
 function TGModelList.ItemClass: TModelClass;

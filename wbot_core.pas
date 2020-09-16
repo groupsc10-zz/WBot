@@ -22,7 +22,7 @@ type
   TRequestChatEvent = procedure(const ASender: TObject;
     const AChats: TResponseChat) of object;
   TRequestContactsEvent = procedure(const ASender: TObject;
-    const ACantacts: TResponseContact) of object;
+    const AContacts: TResponseContact) of object;
 
   { TWBot }
 
@@ -43,7 +43,7 @@ type
     FVersion: string;
     function GetAuthenticated: boolean;
     function GetConected: boolean;
-    procedure SetUnreadMsgs(AValue: boolean);
+    procedure SetUnreadMsgs(const AValue: boolean);
   protected
     procedure InternalError(const ASender: TObject; const AError: string;
       const AAdditionalInformation: string);  
@@ -53,16 +53,15 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Connect;
-    procedure Disconnect;
+    procedure Disconnect(const ALogout: boolean = False);
     procedure GetAllContacts;
     procedure GetAllGroups;
     procedure GetBatteryLevel;
-    procedure GetUnreadMessages; 
-    //procedure Logout;
+    procedure GetUnreadMessages;
     procedure SendArchive(const APhone, AArchive, AMsg: string);
-    procedure SendContact(const APhone, AContact: string);   
-    procedure SendMsg(const APhone, AMsg: string);
+    procedure SendContact(const APhone, AContact: string);
     procedure ReadMsg(const APhone: String);
+    procedure SendMsg(const APhone, AMsg: string);
   public                
     property Authenticated: boolean read GetAuthenticated;
     property Conected: boolean read GetConected;
@@ -125,12 +124,16 @@ begin
   Result := FForm.Conected;
 end;
 
-procedure TWBot.SetUnreadMsgs(AValue: boolean);
+procedure TWBot.SetUnreadMsgs(const AValue: boolean);
 begin
-  if FMonitorUnreadMsgs=AValue then
-    Exit;
-  FMonitorUnreadMsgs:=AValue;
-  FForm.MonitorUnreadMsgs:=FMonitorUnreadMsgs;
+  if (FMonitorUnreadMsgs<>AValue) then
+  begin
+    FMonitorUnreadMsgs:=AValue;    
+    if (not(csDesigning in ComponentState)) then
+    begin
+      FForm.MonitorUnreadMsgs:=FMonitorUnreadMsgs;
+    end;
+  end;
 end;
 
 procedure TWBot.InternalError(const ASender: TObject; const AError: string;
@@ -248,9 +251,9 @@ begin
   FForm.Connect;
 end;
 
-procedure TWBot.Disconnect;
+procedure TWBot.Disconnect(const ALogout: boolean);
 begin
-  FForm.Disconnect;
+  FForm.Disconnect(ALogout);
 end;
 
 procedure TWBot.GetAllContacts;
@@ -282,18 +285,17 @@ procedure TWBot.SendContact(const APhone, AContact: string);
 begin                      
   // TODO: Check phone structure
   FForm.SendContact(APhone, AContact);
+end;         
 
+procedure TWBot.ReadMsg(const APhone: String);
+begin
+  FForm.ReadMsg(APhone);
 end;
 
 procedure TWBot.SendMsg(const APhone, AMsg: string);
 begin
   // TODO: Check phone structure
   FForm.SendMsg(APhone, AMsg);
-end;
-
-procedure TWBot.ReadMsg(const APhone: String);
-begin
-  FForm.ReadMsg(APhone);
 end;
 
 end.
