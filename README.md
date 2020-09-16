@@ -10,6 +10,10 @@
 
 **WBOT** This package is used to provide a clean interface for developers interacting with WhatsAPP Web to send and receive Whatsapp messages. It is based on the official Whatsapp Web Browser Application and uses Chromium browser automation to communicate with Whatsapp Web.
 
+## Video
+
+[![WBot first steps](https://img.youtube.com/vi/JT7P0asACjI/0.jpg)](https://youtu.be/JT7P0asACjI "WBot first steps")
+
 ## Dependent
 This project depends on the following package: [CEF4Delphi](https://github.com/salvadordf/CEF4Delphi)
 
