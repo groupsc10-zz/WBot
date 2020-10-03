@@ -16,7 +16,7 @@ interface
 uses
   Classes, SysUtils, TypInfo, fpjson, jsonparser, jsonscanner, base64, LResources,
   // Wbot
-  WBot_Model, WBot_Const;
+  WBot_Model;
 
 function StringToFile(const AString: string; const AFileName: TFileName;
   const ASafely: boolean = True): boolean;
@@ -36,7 +36,9 @@ procedure JSONToObject(const AJSON: TJSONData;
 function ObjectToJSON(const AObject: TObject): TJSONData;
 
 procedure Base64ToStream(const AString: string; const AStream: TStream;
-  const AMode: TBase64DecodingMode = bdmMIME);  
+  const AMode: TBase64DecodingMode = bdmMIME);
+
+function StreamToBase64(const AStream: TStream): string;
 
 function ResourceToString(const AResourceName: string): string;
 
@@ -427,6 +429,30 @@ begin
       finally
         VDecoder.Free;
       end;
+    finally
+      VStream.Free;
+    end;
+  end;
+end;
+
+function StreamToBase64(const AStream: TStream): string;
+var
+  VStream: TStringStream;
+  VEncoding: TBase64EncodingStream;
+begin
+  Result := EmptyStr;
+  if (Assigned(AStream)) and (AStream.Size > 0) then
+  begin
+    AStream.Position := 0;
+    VStream := TStringStream.Create(EmptyStr);
+    try
+      VEncoding := TBase64EncodingStream.Create(VStream);
+      try
+        VEncoding.CopyFrom(AStream, AStream.Size);
+      finally
+        VEncoding.Free;
+      end;
+      Result := VStream.DataString;
     finally
       VStream.Free;
     end;

@@ -13,13 +13,18 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
-    ButtonEnviarMsgText: TButton;
     ButtonCarregaContatos: TButton;
+    ButtonCarregaGrupos: TButton;
     ButtonConecta: TButton;
+    ButtonEnviarMsgFile: TButton;
+    ButtonEnviarMsgFile1: TButton;
+    ButtonEnviarMsgText: TButton;
+    ButtonEnviarMsgText1: TButton;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     EditNumero: TEdit;
+    EditNumero1: TEdit;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     Label1: TLabel;
@@ -31,21 +36,32 @@ type
     LabelCtName: TLabel;
     LabelCtId: TLabel;
     ListBoxContatos: TListBox;
+    ListBoxGrupos: TListBox;
     MemoLog: TMemo;
+    MemoMsgTxt: TMemo;
+    MemoMsgTxt1: TMemo;
     MemoRecebida: TMemo;
     MemoEnviada: TMemo;
-    MemoMsgTxt: TMemo;
+    OpenDialog1: TOpenDialog;
     PageControl1: TPageControl;
+    PageControlMsg: TPageControl;
     Panel1: TPanel;
     TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
     WBot1: TWBot;
+    procedure ButtonCarregaGruposClick(Sender: TObject);
     procedure ButtonCarregaContatosClick(Sender: TObject);
     procedure ButtonConectaClick(Sender: TObject);
+    procedure ButtonEnviarMsgFile1Click(Sender: TObject);
+    procedure ButtonEnviarMsgFileClick(Sender: TObject);
+    procedure ButtonEnviarMsgText1Click(Sender: TObject);
     procedure ButtonEnviarMsgTextClick(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListBoxContatosDblClick(Sender: TObject);
+    procedure ListBoxGruposDblClick(Sender: TObject);
     procedure WBot1Connected(Sender: TObject);
     procedure WBot1Disconnected(Sender: TObject);
     procedure WBot1LowBatteryLevel(Sender: TObject);
@@ -53,6 +69,8 @@ type
       const AChats: TResponseChat);
     procedure WBot1RequestContact(const Sender: TObject;
       const AContacts: TResponseContact);
+    procedure WBot1RequestGroups(const Sender: TObject;
+      const AGroups: TResponseGroups);
   private
     procedure AddLog(const AStr: String);
     procedure Limpar;
@@ -110,6 +128,32 @@ begin
   end;
 end;
 
+procedure TForm1.ButtonEnviarMsgFileClick(Sender: TObject);
+begin
+  if WBot1.Conected and OpenDialog1.Execute then
+  begin
+    WBot1.SendFile(EditNumero.Text, NormalizeString(MemoMsgTxt.Text),
+      OpenDialog1.FileName);
+  end;
+end;
+
+procedure TForm1.ButtonEnviarMsgText1Click(Sender: TObject);
+begin
+  if WBot1.Conected then
+  begin
+    WBot1.SendMsg(EditNumero1.Text, NormalizeString(MemoMsgTxt1.Text));
+  end;
+end;    
+
+procedure TForm1.ButtonEnviarMsgFile1Click(Sender: TObject);
+begin
+  if WBot1.Conected and OpenDialog1.Execute then
+  begin
+    WBot1.SendFile(EditNumero1.Text, NormalizeString(MemoMsgTxt1.Text),
+      OpenDialog1.FileName);
+  end;
+end;
+
 procedure TForm1.CheckBox1Change(Sender: TObject);
 begin
   WBot1.MonitorUnreadMsgs:=CheckBox1.Checked;
@@ -125,11 +169,32 @@ begin
   EditNumero.Text:= ExtractBetween(ListBoxContatos.GetSelectedText, '(', ')');
 end;
 
+procedure TForm1.ListBoxGruposDblClick(Sender: TObject);
+var
+  VText: string;
+  VIndex: NativeInt;
+begin
+  VText := ListBoxGrupos.GetSelectedText;
+  VIndex := Pos('@g.us', VText);
+  if (VIndex > 0) then
+  begin
+    EditNumero1.Text := Copy(VText, 0, Pos('@g.us', VText) + 5);
+  end;
+end;
+
 procedure TForm1.ButtonCarregaContatosClick(Sender: TObject);
 begin
   if WBot1.Conected then
   begin
     WBot1.GetAllContacts;
+  end;
+end;
+
+procedure TForm1.ButtonCarregaGruposClick(Sender: TObject);
+begin
+  if WBot1.Conected then
+  begin
+    WBot1.GetAllGroups;
   end;
 end;
 
@@ -148,7 +213,6 @@ begin
   ButtonConecta.Caption:='Connectar';
   AddLog('Desconectado');
 end;
-
 
 procedure TForm1.WBot1LowBatteryLevel(Sender: TObject);
 begin
@@ -193,6 +257,12 @@ begin
   end;
 end;
 
+procedure TForm1.WBot1RequestGroups(const Sender: TObject;
+  const AGroups: TResponseGroups);
+begin
+  ListBoxGrupos.Items.Assign(AGroups.Result);
+end;
+
 procedure TForm1.AddLog(const AStr: String);
 begin
   MemoLog.Lines.Add(AStr);
@@ -201,13 +271,17 @@ end;
 
 procedure TForm1.Limpar;
 begin  
-  PageControl1.ActivePage := TabSheet1;
+  PageControl1.ActivePage := TabSheet1;  
+  PageControlMsg.ActivePage := TabSheet2;
   LabelStatus.Color := clRed;
   LabelStatus.Font.Color := clWhite;
   LabelStatus.Font.Style := LabelStatus.Font.Style + [fsBold];
   ListBoxContatos.Clear;
   EditNumero.Text:= '';
   MemoMsgTxt.Text:= 'Olá';
+  ListBoxGrupos.Clear;
+  EditNumero1.Text:= '';
+  MemoMsgTxt1.Text:= 'Olá';
 end;
 
 procedure TForm1.RespostaAutomatica(const AFoneId, AMsgRecebida: String);

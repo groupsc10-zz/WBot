@@ -23,12 +23,13 @@ const
   WBOT_INI = 'wbot.ini';
 
   CMD_SEND_CHAT_STATE =
-    'Store.WapQuery.sendChatstateComposing("<#PHONE#>");';
-  CMD_SEND_MSG =
-    'window.WAPI.sendMessageToID("<#PHONE#>","<#MSG#>")';
+    'Store.WapQuery.sendChatstateComposing("<#PHONE#>");';  
   CMD_SEND_CONTACT
     = 'window.WAPI.sendContact("<#PHONE#>", "<#CONTACT#>")';
-
+  CMD_SEND_MSG =
+    'window.WAPI.sendMessageToID("<#PHONE#>","<#MSG#>")';  
+  CMD_SEND_MSG_BASE64 =
+    'window.WAPI.sendImage("<#MSG#>", "<#PHONE#>", "<#FILENAME#>", "<#CAPTION#>")';
   CMD_GET_QRCODE =
     'var _qrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");' + LineEnding +
     'console.log(JSON.stringify({"name":"getQrCode","result":{_qrCode}}));';
@@ -50,7 +51,7 @@ const
 
 resourcestring
   EXCEPT_CEF_APP =
-    'Component GlobalCEFApp has not been initialized in your application.';
+    'Component GlobalCEFApp has not been initialized in your application';
   EXCEPT_CEF_BROWSER =
     'Error creating browser in CEF';
   EXCEPT_CEF_CONNECT =
@@ -60,6 +61,8 @@ resourcestring
     + LineEnding + 'Required version: %s' + LineEnding + 'Identified version: %s';
 
   EXCEPT_JS_UNKNOWN = 'Unknown wbot.js return';
+
+  EXCEPT_FILE_NOFOUND = '%s file not found';
 
   QRCODE_LOADING =  'Loading QRCode...';
   QRCODE_SUCCESS = 'Point your phone now!';

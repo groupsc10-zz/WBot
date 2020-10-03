@@ -79,6 +79,7 @@ type
     procedure ReadMsg(const ANumber: String);
     procedure SendContact(const ANumber, AContact: string);
     procedure SendMsg(const ANumber, AMsg: string);
+    procedure SendMsgBase64(const ANumber, AMsg, AFileName, ACaption: string);
   public
     property Conected: boolean read FConected;
     property Authenticated: boolean read FAuthenticated;
@@ -428,6 +429,15 @@ begin
   ExecuteScript(CMD_GET_ALL_GROUPS);
 end;
 
+procedure TWBotForm.ReadMsg(const ANumber: String);
+var
+  VScript: string;
+begin
+  VScript := CMD_READ_MSG;
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
+  ExecuteScript(VScript);
+end;
+
 procedure TWBotForm.SendContact(const ANumber, AContact: string);
 var
   VScript: string;
@@ -435,15 +445,6 @@ begin
   VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_CONTACT;
   VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
   VScript := ReplaceVAR(VScript, '<#CONTACT#>', AContact);
-  ExecuteScript(VScript);
-end;      
-
-procedure TWBotForm.ReadMsg(const ANumber: String);
-var
-  VScript: string;
-begin
-  VScript := CMD_READ_MSG;
-  VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
   ExecuteScript(VScript);
 end;
 
@@ -454,6 +455,19 @@ begin
   VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_MSG;
   VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
   VScript := ReplaceVAR(VScript, '<#MSG#>', AMsg);
+  ExecuteScript(VScript);
+end;
+
+procedure TWBotForm.SendMsgBase64(const ANumber, AMsg, AFileName,
+  ACaption: string);    
+var
+  VScript: string;
+begin
+  VScript := CMD_SEND_CHAT_STATE + LineEnding + CMD_SEND_MSG_BASE64; 
+  VScript := ReplaceVAR(VScript, '<#PHONE#>', ANumber);
+  VScript := ReplaceVAR(VScript, '<#MSG#>', AMsg); 
+  VScript := ReplaceVAR(VScript, '<#FILENAME#>', AFileName);
+  VScript := ReplaceVAR(VScript, '<#CAPTION#>', ACaption);
   ExecuteScript(VScript);
 end;
 

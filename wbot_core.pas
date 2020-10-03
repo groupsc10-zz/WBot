@@ -14,7 +14,7 @@ unit WBot_Core;
 interface
 
 uses
-  Classes, SysUtils, LResources,
+  Classes, SysUtils, StrUtils, LResources,
   //WBot
   WBot_Model, WBot_Form;
 
@@ -22,7 +22,9 @@ type
   TRequestChatEvent = procedure(const ASender: TObject;
     const AChats: TResponseChat) of object;
   TRequestContactsEvent = procedure(const ASender: TObject;
-    const AContacts: TResponseContact) of object;
+    const AContacts: TResponseContact) of object;  
+  TRequestGroupsEvent = procedure(const ASender: TObject;
+    const AGroups: TResponseGroups) of object;
 
   { TWBot }
 
@@ -39,7 +41,8 @@ type
     FOnNotification: TNotificationEvent; 
     FOnRequestChat: TRequestChatEvent;
     FOnRequestContact: TRequestContactsEvent;
-    FForm: TWBotForm;    
+    FForm: TWBotForm;
+    FOnRequestGroups: TRequestGroupsEvent;
     FVersion: string;
     function GetAuthenticated: boolean;
     function GetConected: boolean;
@@ -58,9 +61,9 @@ type
     procedure GetAllGroups;
     procedure GetBatteryLevel;
     procedure GetUnreadMessages;
-    procedure SendArchive(const APhone, AArchive, AMsg: string);
-    procedure SendContact(const APhone, AContact: string);
     procedure ReadMsg(const APhone: String);
+    procedure SendContact(const APhone, AContact: string);
+    procedure SendFile(const APhone, ACaption, AFileName: string);
     procedure SendMsg(const APhone, AMsg: string);
   public                
     property Authenticated: boolean read GetAuthenticated;
@@ -88,7 +91,9 @@ type
     property OnRequestChat: TRequestChatEvent
       read FOnRequestChat write FOnRequestChat;
     property OnRequestContact: TRequestContactsEvent
-      read FOnRequestContact write FOnRequestContact;
+      read FOnRequestContact write FOnRequestContact;  
+    property OnRequestGroups: TRequestGroupsEvent
+      read FOnRequestGroups write FOnRequestGroups;
   end;
 
 procedure Register;
@@ -96,7 +101,7 @@ procedure Register;
 implementation
 
 uses
-  WBot_Const;
+  WBot_Const, WBot_Utils;
 
 procedure Register;
 begin        
@@ -149,7 +154,8 @@ procedure TWBot.InternalNotification(const ASender: TObject;
   const AAction: TActionType; const AData: string);
 var                              
   VResponseChat: TResponseChat;
-  VResponseContact: TResponseContact;  
+  VResponseContact: TResponseContact;   
+  VResponseGroups: TResponseGroups;
   VResponseBattery: TResponseBattery;
 begin
   if (Assigned(FOnNotification)) then
@@ -201,6 +207,20 @@ begin
           FOnRequestContact(Self, VResponseContact);
         finally
           FreeAndNil(VResponseContact);
+        end;
+      end;
+    end;
+
+    atGetAllGroups:
+    begin   
+      if (Assigned(FOnRequestGroups)) then
+      begin
+        VResponseGroups := TResponseGroups.Create;
+        try
+          VResponseGroups.LoadJSON(AData);
+          FOnRequestGroups(Self, VResponseGroups);
+        finally
+          FreeAndNil(VResponseGroups);
         end;
       end;
     end;
@@ -274,23 +294,54 @@ end;
 procedure TWBot.GetUnreadMessages;
 begin                  
   FForm.GetUnreadMessages;
-end;
+end;      
 
-procedure TWBot.SendArchive(const APhone, AArchive, AMsg: string);
+procedure TWBot.ReadMsg(const APhone: String);
 begin
-
+  FForm.ReadMsg(APhone);
 end;
 
 procedure TWBot.SendContact(const APhone, AContact: string);
 begin                      
   // TODO: Check phone structure
   FForm.SendContact(APhone, AContact);
-end;         
-
-procedure TWBot.ReadMsg(const APhone: String);
-begin
-  FForm.ReadMsg(APhone);
 end;
+
+procedure TWBot.SendFile(const APhone, ACaption, AFileName: string);
+var
+  VStream: TStream;   
+  VFileBase64: string;
+  VFileName: string;
+  VFileExt: string;
+  VMsg: string;
+begin     
+  // TODO: Check phone structure
+                             
+  if (not(FileExists(AFileName))) then
+  begin
+    InternalError(Self, Format(EXCEPT_FILE_NOFOUND, [AFileName]), '');
+    Exit;
+  end;
+
+  VStream := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
+  try                                      
+    VFileBase64 := StreamToBase64(VStream);
+  finally
+    FreeAndNil(VStream);
+  end;
+  VFileName := ExtractFileName(AFileName);
+  VFileExt := ExtractFileExt(AFileName);
+  VMsg := 'data:application/';
+  if (AnsiIndexStr(VFileExt,
+    ['.jpg', '.jpeg', '.tif', '.ico', '.bmp', '.png', '.raw']) > -1) then
+  begin
+    VMsg := 'data:image/';
+  end;
+  VMsg := VMsg + VFileExt + ';base64,' + VFileBase64;
+
+  // Send
+  FForm.SendMsgBase64(APhone, VMsg, VFileName, ACaption);
+end;  
 
 procedure TWBot.SendMsg(const APhone, AMsg: string);
 begin
