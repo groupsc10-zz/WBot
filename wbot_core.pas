@@ -48,6 +48,7 @@ type
     function GetConected: boolean;
     procedure SetUnreadMsgs(const AValue: boolean);
   protected
+    property Console: TWBotForm read FForm;
     procedure InternalError(const ASender: TObject; const AError: string;
       const AAdditionalInformation: string);  
     procedure InternalNotification(const ASender: TObject;
